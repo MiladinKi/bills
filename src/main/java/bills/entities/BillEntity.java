@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -13,14 +14,14 @@ public class BillEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
     private String name;
-    private Double amount;
+    private BigDecimal amount;
     private LocalDate dateOfBill;
     private String description;
 
     public BillEntity() {
     }
 
-    public BillEntity(Integer id, String name, Double amount, LocalDate dateOfBill, String description) {
+    public BillEntity(Integer id, String name, BigDecimal amount, LocalDate dateOfBill, String description) {
         this.id = id;
         this.name = name;
         this.amount = amount;
@@ -44,11 +45,11 @@ public class BillEntity {
         this.name = name;
     }
 
-    public Double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(Double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 

@@ -12,5 +12,7 @@ public interface BillRepository extends JpaRepository<BillEntity, Integer> {
     List<BillEntity> findByDateOfBillBetween(LocalDate start, LocalDate end);
     List<BillEntity> findByNameAndDateOfBillBetween(String name, LocalDate start,
                                                       LocalDate end);
+
+    void deleteById(BillEntity entity);
 }
 

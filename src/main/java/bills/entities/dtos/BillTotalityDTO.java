@@ -2,16 +2,17 @@ package bills.entities.dtos;
 
 import bills.entities.BillEntity;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class BillTotalityDTO {
     private List<BillDTO> bills;
-    private Double totalAmount;
+    private BigDecimal totalAmount;
 
     public BillTotalityDTO() {
     }
 
-    public BillTotalityDTO(List<BillDTO> bills, Double totalAmount) {
+    public BillTotalityDTO(List<BillDTO> bills, BigDecimal totalAmount) {
         this.bills = bills;
         this.totalAmount = totalAmount;
     }
@@ -24,11 +25,11 @@ public class BillTotalityDTO {
         this.bills = bills;
     }
 
-    public Double getTotalAmount() {
+    public BigDecimal getTotalAmount() {
         return totalAmount;
     }
 
-    public void setTotalAmount(Double totalAmount) {
+    public void setTotalAmount(BigDecimal totalAmount) {
         this.totalAmount = totalAmount;
     }
 }
