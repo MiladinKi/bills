@@ -1,6 +1,7 @@
 package bills.controllers;
 
 import bills.controllers.utils.RESTError;
+import bills.entities.BillEntity;
 import bills.entities.dtos.BillDTO;
 import bills.entities.dtos.BillTotalityDTO;
 import bills.services.BillService;
@@ -9,85 +10,106 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/bills/bill")
 public class BillController {
 
-    @Autowired
-    private BillService billService;
+
+    final private BillService billService;
+
+    public BillController(BillService billService) {
+        this.billService = billService;
+    }
 
     @RequestMapping(method = RequestMethod.POST, path = "/createBill")
-    public ResponseEntity<?> createBill(@RequestBody BillDTO billDTO){
+    public BillDTO createBill(@RequestBody BillDTO billDTO){
         try {
-            BillDTO bill = billService.createBill(billDTO);
-            return new ResponseEntity<>(bill, HttpStatus.CREATED);
+            return billService.createBill(billDTO);
+
         } catch (Exception e) {
-            return new ResponseEntity<>(new RESTError(1, "Error occur: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+            throw  new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occur: " + e.getMessage());
         }
     }
 
     @RequestMapping(method = RequestMethod.DELETE, path = "/deleteById/{billId}")
-    public ResponseEntity<?> deleteById(@PathVariable Integer billId){
-        try {
+    public ResponseEntity<String> deleteById(@PathVariable Integer billId){
+    try {
             billService.deleteBillById(billId);
             return ResponseEntity.ok("Bill successfully delete.");
-        } catch (Exception e) {
-            return new ResponseEntity<>(new RESTError(1, "Error occur: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+
+        } catch (RuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Bill not found");
+
+    } catch (Exception e) {
+        throw new  ResponseStatusException (HttpStatus.INTERNAL_SERVER_ERROR, "Error occur: " + e.getMessage());
+    }
+
 }
 
     @RequestMapping(method = RequestMethod.PUT, path = "/modifyById/{billId}")
-    public ResponseEntity<?> modifyById(@PathVariable Integer billId, @RequestBody BillDTO billDTO){
+    public ResponseEntity<BillDTO> modifyById(@PathVariable Integer billId, @RequestBody BillDTO billDTO){
         try {
             BillDTO updatedBill = billService.modifyById(billId, billDTO);
-            return new ResponseEntity<>(updatedBill, HttpStatus.OK);
-        } catch (Exception e){
-            return new ResponseEntity<>(new RESTError(1, "Error occur: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.ok(updatedBill);
+        } catch (RuntimeException e){
+           throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred: " + e.getMessage());
         }
 }
 
     @RequestMapping(method = RequestMethod.GET, path = "/getById/{billId}")
-    public ResponseEntity<?> getById(@PathVariable Integer billId){
+    public ResponseEntity<BillDTO> getById(@PathVariable Integer billId){
         try {
             BillDTO bill = billService.getById(billId);
-            return new ResponseEntity<>(bill, HttpStatus.OK);
+            return ResponseEntity.ok(bill);
+        } catch (RuntimeException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (Exception e) {
-            return new ResponseEntity<>(new RESTError(1, "Exception occur: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred: " + e.getMessage());
         }
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/allBills")
-    public ResponseEntity<?> getAll(){
+    public ResponseEntity<List<BillDTO>> getAll(){
         try {
             List<BillDTO> bills = billService.getAll();
-            return new ResponseEntity<>(bills, HttpStatus.OK);
+            return ResponseEntity.ok(bills);
+        } catch (RuntimeException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (Exception e) {
-            return new ResponseEntity<>(new RESTError(1, "Exception occur: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred: " + e.getMessage());
         }
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/findByName/{name}")
-    public ResponseEntity<?> getAllByName(@PathVariable String name){
+    public ResponseEntity<List<BillDTO>> getAllByName(@PathVariable String name){
         try {
             List<BillDTO> bills = billService.getAllByName(name);
-            return new ResponseEntity<>(bills, HttpStatus.OK);
+            return ResponseEntity.ok(bills);
+        } catch (RuntimeException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (Exception e) {
-            return new ResponseEntity<>(new RESTError(1, "Exception occur: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred: " + e.getMessage());
         }
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/findByDate")
-    public ResponseEntity<?> findByDate(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
+    public ResponseEntity<BillTotalityDTO> findByDate(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
                                         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end){
         try{
             BillTotalityDTO totality = billService.findByDate(start, end);
-            return new ResponseEntity<>(totality, HttpStatus.OK);
-        } catch (Exception e){
-            return new ResponseEntity<>(new RESTError(1, "Exception occur: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.ok(totality);
+        } catch (RuntimeException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error occurred." + e.getMessage());
         }
     }
 
@@ -97,9 +119,11 @@ public class BillController {
                                               @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end){
         try {
             BillTotalityDTO totality = billService.findByNameAndDate(name, start, end);
-            return new ResponseEntity<>(totality, HttpStatus.OK);
+            return ResponseEntity.ok(totality);
+        } catch (RuntimeException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (Exception e) {
-            return new ResponseEntity<>(new RESTError(1, "Exception occur: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error occurred." + e.getMessage());
         }
     }
 }

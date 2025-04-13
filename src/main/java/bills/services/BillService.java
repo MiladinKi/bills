@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,11 +18,17 @@ import java.util.stream.Collectors;
 @Service
 public class BillService {
 
-    @Autowired
-    private BillRepository billRepository;
+
+    final private BillRepository billRepository;
+
+
+    public BillService(@Autowired BillRepository billRepository) {
+        this.billRepository = billRepository;
+    }
 
     public BillDTO createBill(BillDTO billDTO){
       BillEntity bill = BillMapper.toEntity(billDTO);
+      bill.setAmount(bill.getAmount().setScale(2, RoundingMode.HALF_UP));
       billRepository.save(bill);
       return BillMapper.toDTO(bill);
     }
@@ -36,7 +44,7 @@ public class BillService {
         bill.setName(billDTO.getName());
         bill.setAmount(billDTO.getAmount());
         bill.setDateOfBill(billDTO.getDateOfBill());
-        bill.setDescription(bill.getDescription());
+        bill.setDescription(billDTO.getDescription());
 
         billRepository.save(bill);
         return BillMapper.toDTO(bill);
@@ -65,7 +73,8 @@ public class BillService {
         List<BillDTO> billDTOs = bills.stream().
                 map(bill -> BillMapper.toDTO(bill)).collect(Collectors.toList());
 
-        double totalAmount = bills.stream().mapToDouble(BillEntity :: getAmount).sum();
+        BigDecimal totalAmount = bills.stream().map(BillEntity :: getAmount).
+                reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP);
 
         return new BillTotalityDTO(billDTOs, totalAmount);
     }
@@ -74,7 +83,8 @@ public class BillService {
         List<BillEntity> bills = billRepository.findByNameAndDateOfBillBetween(name, start, end);
         List<BillDTO> billDTOs = bills.stream().map(bill-> BillMapper.toDTO(bill)).collect(Collectors.toList());
 
-        double totalAmount = bills.stream().mapToDouble(BillEntity :: getAmount).sum();
+        BigDecimal totalAmount = bills.stream().map(BillEntity :: getAmount).
+            reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP);
 
         return new BillTotalityDTO(billDTOs, totalAmount);
 
