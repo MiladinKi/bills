@@ -1,0 +1,64 @@
+package bills.entities.dtos;
+
+import jakarta.persistence.Column;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+public class PaymentDTO {
+    private Integer billId;
+    @NotNull
+    @DecimalMin(value = "0.01", message = "Amount must be bigger than 0!")
+    @Column(precision = 10, scale = 2)
+    private BigDecimal amountPayment;
+    @NotNull
+    @PastOrPresent(message = "Date cannot be in the future or older than 30 days!")
+    private LocalDate createdAt;
+    @NotNull(message = "Cancellation information is mandatory")
+    private Boolean isCancelled;
+
+    public PaymentDTO() {
+    }
+
+    public PaymentDTO(Integer billId, BigDecimal amountPayment, LocalDate createdAt, Boolean isCancelled) {
+        this.billId = billId;
+        this.amountPayment = amountPayment;
+        this.createdAt = createdAt;
+        this.isCancelled = isCancelled;
+    }
+
+    public Integer getBillId() {
+        return billId;
+    }
+
+    public void setBillId(Integer billId) {
+        this.billId = billId;
+    }
+
+    public @NotNull @DecimalMin(value = "0.01", message = "Amount must be bigger than 0!") BigDecimal getAmountPayment() {
+        return amountPayment;
+    }
+
+    public void setAmountPayment(@NotNull @DecimalMin(value = "0.01", message = "Amount must be bigger than 0!") BigDecimal amountPayment) {
+        this.amountPayment = amountPayment;
+    }
+
+    public @NotNull @PastOrPresent(message = "Date cannot be in the future or older than 30 days!") LocalDate getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(@NotNull @PastOrPresent(message = "Date cannot be in the future or older than 30 days!") LocalDate createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public @NotNull(message = "Cancellation information is mandatory") Boolean getCancelled() {
+        return isCancelled;
+    }
+
+    public void setCancelled(@NotNull(message = "Cancellation information is mandatory") Boolean cancelled) {
+        isCancelled = cancelled;
+    }
+}

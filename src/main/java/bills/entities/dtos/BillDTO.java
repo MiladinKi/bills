@@ -1,34 +1,35 @@
 package bills.entities.dtos;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BillDTO {
     private Integer id;
     @NotBlank(message = "Name must be provided!")
     private String name;
-    @NotNull
-    @DecimalMin(value = "0.01", message = "Amount must be bigger than 0!")
-    @Column(precision = 10, scale = 2)
-    private BigDecimal amount;
-    @NotNull
-    @PastOrPresent(message = "Date cannot be in the future or older than 30 days!")
-    private LocalDate dateOfBill;
     @Max(value = 300, message = "Maximum characters in description is 300!")
     private String description;
+    @NotNull(message = "Interval is mandatory.")
+    @Min(value = 1, message = "The minimum interval must be 1.")
+    @Max(value = 12, message = "The maximum interval can be bigger then 12!")
+    private Integer interval;
+
+    List<Integer> paymentIds = new ArrayList<>();
+
+    List<Integer> totalPaymentIds = new ArrayList<>();
 
     public BillDTO() {
     }
 
-    public BillDTO(Integer id, String name, BigDecimal amount, LocalDate dateOfBill, String description) {
+    public BillDTO(Integer id, String name, String description, Integer interval, List<Integer> paymentIds, List<Integer> totalPaymentIds) {
         this.id = id;
         this.name = name;
-        this.amount = amount;
-        this.dateOfBill = dateOfBill;
         this.description = description;
+        this.interval = interval;
+        this.paymentIds = paymentIds;
+        this.totalPaymentIds = totalPaymentIds;
     }
 
     public Integer getId() {
@@ -39,35 +40,43 @@ public class BillDTO {
         this.id = id;
     }
 
-    public String getName() {
+    public @NotBlank(message = "Name must be provided!") String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(@NotBlank(message = "Name must be provided!") String name) {
         this.name = name;
     }
 
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
-
-    public LocalDate getDateOfBill() {
-        return dateOfBill;
-    }
-
-    public void setDateOfBill(LocalDate dateOfBill) {
-        this.dateOfBill = dateOfBill;
-    }
-
-    public String getDescription() {
+    public @Max(value = 300, message = "Maximum characters in description is 300!") String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(@Max(value = 300, message = "Maximum characters in description is 300!") String description) {
         this.description = description;
+    }
+
+    public @NotNull(message = "Interval is mandatory.") @Min(value = 1, message = "The minimum interval must be 1.") @Max(value = 12, message = "The maximum interval can be bigger then 12!") Integer getInterval() {
+        return interval;
+    }
+
+    public void setInterval(@NotNull(message = "Interval is mandatory.") @Min(value = 1, message = "The minimum interval must be 1.") @Max(value = 12, message = "The maximum interval can be bigger then 12!") Integer interval) {
+        this.interval = interval;
+    }
+
+    public List<Integer> getPaymentIds() {
+        return paymentIds;
+    }
+
+    public void setPaymentIds(List<Integer> paymentIds) {
+        this.paymentIds = paymentIds;
+    }
+
+    public List<Integer> getTotalPaymentIds() {
+        return totalPaymentIds;
+    }
+
+    public void setTotalPaymentIds(List<Integer> totalPaymentIds) {
+        this.totalPaymentIds = totalPaymentIds;
     }
 }

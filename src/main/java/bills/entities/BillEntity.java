@@ -1,12 +1,11 @@
 package bills.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class BillEntity {
@@ -14,19 +13,25 @@ public class BillEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
     private String name;
-    private BigDecimal amount;
-    private LocalDate dateOfBill;
     private String description;
+    private Integer interval;
+
+    @OneToMany(mappedBy = "bill", cascade = CascadeType.REFRESH, orphanRemoval = true)
+    private List<PaymentEntity> payments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "bill", cascade = CascadeType.REFRESH, orphanRemoval = true)
+    private List<TotalPaymentEntity> totalPayments = new ArrayList<>();
 
     public BillEntity() {
     }
 
-    public BillEntity(Integer id, String name, BigDecimal amount, LocalDate dateOfBill, String description) {
+    public BillEntity(Integer id, String name, String description, Integer interval, List<PaymentEntity> payments, List<TotalPaymentEntity> totalPayments) {
         this.id = id;
         this.name = name;
-        this.amount = amount;
-        this.dateOfBill = dateOfBill;
         this.description = description;
+        this.interval = interval;
+        this.payments = payments;
+        this.totalPayments = totalPayments;
     }
 
     public Integer getId() {
@@ -45,27 +50,35 @@ public class BillEntity {
         this.name = name;
     }
 
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
-
-    public LocalDate getDateOfBill() {
-        return dateOfBill;
-    }
-
-    public void setDateOfBill(LocalDate dateOfBill) {
-        this.dateOfBill = dateOfBill;
-    }
-
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Integer getInterval() {
+        return interval;
+    }
+
+    public void setInterval(Integer interval) {
+        this.interval = interval;
+    }
+
+    public List<PaymentEntity> getPayments() {
+        return payments;
+    }
+
+    public void setPayments(List<PaymentEntity> payments) {
+        this.payments = payments;
+    }
+
+    public List<TotalPaymentEntity> getTotalPayments() {
+        return totalPayments;
+    }
+
+    public void setTotalPayments(List<TotalPaymentEntity> totalPayments) {
+        this.totalPayments = totalPayments;
     }
 }
