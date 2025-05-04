@@ -4,14 +4,15 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 public class PaymentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer billId;
+    private Integer id;
     private BigDecimal amountPayment;
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
     private Boolean isCancelled;
 
     @ManyToOne (cascade = CascadeType.REFRESH)
@@ -21,20 +22,20 @@ public class PaymentEntity {
     public PaymentEntity() {
     }
 
-    public PaymentEntity(Integer billId, BigDecimal amountPayment, LocalDate createdAt, Boolean isCancelled, BillEntity bill) {
-        this.billId = billId;
+    public PaymentEntity(Integer id, BigDecimal amountPayment, LocalDateTime createdAt, Boolean isCancelled, BillEntity bill) {
+        this.id = id;
         this.amountPayment = amountPayment;
         this.createdAt = createdAt;
         this.isCancelled = isCancelled;
         this.bill = bill;
     }
 
-    public Integer getBillId() {
-        return billId;
+    public Integer getId() {
+        return id;
     }
 
-    public void setBillId(Integer billId) {
-        this.billId = billId;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public BigDecimal getAmountPayment() {
@@ -45,19 +46,19 @@ public class PaymentEntity {
         this.amountPayment = amountPayment;
     }
 
-    public LocalDate getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDate createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Boolean getCancelled() {
+    public Boolean getIsCancelled() {
         return isCancelled;
     }
 
-    public void setCancelled(Boolean cancelled) {
+    public void setIsCancelled(Boolean cancelled) {
         isCancelled = cancelled;
     }
 

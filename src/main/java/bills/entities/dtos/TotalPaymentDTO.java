@@ -9,7 +9,7 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 public class TotalPaymentDTO {
-    private Integer billId;
+    private Integer id;
     @NotNull
     @DecimalMin(value = "0.01", message = "Amount must be bigger than 0!")
     @Column(precision = 10, scale = 2)
@@ -22,18 +22,18 @@ public class TotalPaymentDTO {
     public TotalPaymentDTO() {
     }
 
-    public TotalPaymentDTO(Integer billId, BigDecimal amountTotalPayment, Integer period) {
-        this.billId = billId;
+    public TotalPaymentDTO(Integer id, BigDecimal amountTotalPayment, Integer period) {
+        this.id = id;
         this.amountTotalPayment = amountTotalPayment;
         this.period = period;
     }
 
-    public Integer getBillId() {
-        return billId;
+    public Integer getId() {
+        return id;
     }
 
-    public void setBillId(Integer billId) {
-        this.billId = billId;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public @NotNull @DecimalMin(value = "0.01", message = "Amount must be bigger than 0!") BigDecimal getAmountTotalPayment() {

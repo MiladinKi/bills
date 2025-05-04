@@ -7,6 +7,7 @@ import jakarta.validation.constraints.PastOrPresent;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class PaymentDTO {
     private Integer billId;
@@ -16,14 +17,14 @@ public class PaymentDTO {
     private BigDecimal amountPayment;
     @NotNull
     @PastOrPresent(message = "Date cannot be in the future or older than 30 days!")
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
     @NotNull(message = "Cancellation information is mandatory")
     private Boolean isCancelled;
 
     public PaymentDTO() {
     }
 
-    public PaymentDTO(Integer billId, BigDecimal amountPayment, LocalDate createdAt, Boolean isCancelled) {
+    public PaymentDTO(Integer billId, BigDecimal amountPayment, LocalDateTime createdAt, Boolean isCancelled) {
         this.billId = billId;
         this.amountPayment = amountPayment;
         this.createdAt = createdAt;
@@ -46,11 +47,11 @@ public class PaymentDTO {
         this.amountPayment = amountPayment;
     }
 
-    public @NotNull @PastOrPresent(message = "Date cannot be in the future or older than 30 days!") LocalDate getCreatedAt() {
+    public @NotNull @PastOrPresent(message = "Date cannot be in the future or older than 30 days!") LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(@NotNull @PastOrPresent(message = "Date cannot be in the future or older than 30 days!") LocalDate createdAt) {
+    public void setCreatedAt(@NotNull @PastOrPresent(message = "Date cannot be in the future or older than 30 days!") LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 

@@ -14,7 +14,7 @@ public class BillDTO {
     @NotNull(message = "Interval is mandatory.")
     @Min(value = 1, message = "The minimum interval must be 1.")
     @Max(value = 12, message = "The maximum interval can be bigger then 12!")
-    private Integer interval;
+    private Integer billInterval;
 
     List<Integer> paymentIds = new ArrayList<>();
 
@@ -23,11 +23,11 @@ public class BillDTO {
     public BillDTO() {
     }
 
-    public BillDTO(Integer id, String name, String description, Integer interval, List<Integer> paymentIds, List<Integer> totalPaymentIds) {
+    public BillDTO(Integer id, String name, String description, Integer billInterval, List<Integer> paymentIds, List<Integer> totalPaymentIds) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.interval = interval;
+        this.billInterval = billInterval;
         this.paymentIds = paymentIds;
         this.totalPaymentIds = totalPaymentIds;
     }
@@ -56,12 +56,12 @@ public class BillDTO {
         this.description = description;
     }
 
-    public @NotNull(message = "Interval is mandatory.") @Min(value = 1, message = "The minimum interval must be 1.") @Max(value = 12, message = "The maximum interval can be bigger then 12!") Integer getInterval() {
-        return interval;
+    public @NotNull(message = "Interval is mandatory.") @Min(value = 1, message = "The minimum interval must be 1.") @Max(value = 12, message = "The maximum interval can be bigger then 12!") Integer getBillInterval() {
+        return billInterval;
     }
 
-    public void setInterval(@NotNull(message = "Interval is mandatory.") @Min(value = 1, message = "The minimum interval must be 1.") @Max(value = 12, message = "The maximum interval can be bigger then 12!") Integer interval) {
-        this.interval = interval;
+    public void setBillInterval(@NotNull(message = "Interval is mandatory.") @Min(value = 1, message = "The minimum interval must be 1.") @Max(value = 12, message = "The maximum interval can be bigger then 12!") Integer billInterval) {
+        this.billInterval = billInterval;
     }
 
     public List<Integer> getPaymentIds() {
