@@ -17,7 +17,7 @@ public class BillMapper {
         bill.setId(billDTO.getId());
         bill.setName(billDTO.getName());
         bill.setDescription(billDTO.getDescription());
-        bill.setInterval(billDTO.getInterval());
+        bill.setBillInterval(billDTO.getBillInterval());
         return bill;
     }
 
@@ -26,14 +26,14 @@ public class BillMapper {
         dto.setId(billEntity.getId());
         dto.setName(billEntity.getName());
         dto.setDescription(billEntity.getDescription());
-        dto.setInterval(billEntity.getInterval());
+        dto.setBillInterval(billEntity.getBillInterval());
 
         dto.setPaymentIds(billEntity.getPayments().stream()
-                .map(PaymentEntity:: getBillId)
+                .map(PaymentEntity:: getId)
                 .collect(Collectors.toList()));
 
         dto.setTotalPaymentIds(billEntity.getTotalPayments().stream()
-                .map(TotalPaymentEntity::getBillId).collect(Collectors.toList()));
+                .map(TotalPaymentEntity::getId).collect(Collectors.toList()));
 
         return dto;
     }

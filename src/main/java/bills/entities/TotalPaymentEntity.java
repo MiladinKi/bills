@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 public class TotalPaymentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer billId;
+    private Integer id;
     private BigDecimal amountTotalPayment;
     private Integer period;
 
@@ -19,19 +19,19 @@ public class TotalPaymentEntity {
     public TotalPaymentEntity() {
     }
 
-    public TotalPaymentEntity(Integer billId, BigDecimal amountTotalPayment, Integer period, BillEntity bill) {
-        this.billId = billId;
+    public TotalPaymentEntity(Integer id, BigDecimal amountTotalPayment, Integer period, BillEntity bill) {
+        this.id = id;
         this.amountTotalPayment = amountTotalPayment;
         this.period = period;
         this.bill = bill;
     }
 
-    public Integer getBillId() {
-        return billId;
+    public Integer getId() {
+        return id;
     }
 
-    public void setBillId(Integer billId) {
-        this.billId = billId;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public BigDecimal getAmountTotalPayment() {

@@ -14,7 +14,7 @@ public class BillEntity {
     private Integer id;
     private String name;
     private String description;
-    private Integer interval;
+    private Integer billInterval;
 
     @OneToMany(mappedBy = "bill", cascade = CascadeType.REFRESH, orphanRemoval = true)
     private List<PaymentEntity> payments = new ArrayList<>();
@@ -25,11 +25,11 @@ public class BillEntity {
     public BillEntity() {
     }
 
-    public BillEntity(Integer id, String name, String description, Integer interval, List<PaymentEntity> payments, List<TotalPaymentEntity> totalPayments) {
+    public BillEntity(Integer id, String name, String description, Integer billInterval, List<PaymentEntity> payments, List<TotalPaymentEntity> totalPayments) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.interval = interval;
+        this.billInterval = billInterval;
         this.payments = payments;
         this.totalPayments = totalPayments;
     }
@@ -58,12 +58,12 @@ public class BillEntity {
         this.description = description;
     }
 
-    public Integer getInterval() {
-        return interval;
+    public Integer getBillInterval() {
+        return billInterval;
     }
 
-    public void setInterval(Integer interval) {
-        this.interval = interval;
+    public void setBillInterval(Integer billInterval) {
+        this.billInterval = billInterval;
     }
 
     public List<PaymentEntity> getPayments() {
