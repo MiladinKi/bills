@@ -44,7 +44,7 @@ public class PaymentService {
         PaymentEntity payment = paymentRepository.findById(id).orElseThrow(() -> new RuntimeException("Payment not found"));
         payment.setAmountPayment(paymentDTO.getAmountPayment());
         payment.setCreatedAt(paymentDTO.getCreatedAt());
-        payment.setIsCancelled(paymentDTO.getCancelled());
+        payment.setIsCancelled(paymentDTO.getIsCancelled());
         paymentRepository.save(payment);
 
         return PaymentMapper.toDTO(payment);
@@ -78,7 +78,7 @@ public class PaymentService {
         return new PaymentsTotalityDTO(paymentsDTO, totalAmount);
     }
 
-    public List<PaymentDTO> gwtAllCancelledPayments(){
+    public List<PaymentDTO> getAllCancelledPayments(){
         List<PaymentEntity> payments = paymentRepository.findALlByIsCancelledTrue();
         return payments.stream().map(PaymentMapper::toDTO).collect(Collectors.toList());
     }

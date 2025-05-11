@@ -19,7 +19,7 @@ public class TotalPaymentMapper {
 
     public static TotalPaymentDTO toDTO(TotalPaymentEntity totalPayment){
         TotalPaymentDTO dto = new TotalPaymentDTO();
-        dto.setId(totalPayment.getBill().getId());
+        dto.setBillId(totalPayment.getBill().getId());
         dto.setAmountTotalPayment(totalPayment.getAmountTotalPayment());
         dto.setPeriod(totalPayment.getPeriod());
 

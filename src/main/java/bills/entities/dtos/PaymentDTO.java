@@ -55,11 +55,11 @@ public class PaymentDTO {
         this.createdAt = createdAt;
     }
 
-    public @NotNull(message = "Cancellation information is mandatory") Boolean getCancelled() {
+    public @NotNull(message = "Cancellation information is mandatory") Boolean getIsCancelled() {
         return isCancelled;
     }
 
-    public void setCancelled(@NotNull(message = "Cancellation information is mandatory") Boolean cancelled) {
-        isCancelled = cancelled;
+    public void setIsCancelled(@NotNull(message = "Cancellation information is mandatory") Boolean isCancelled) {
+        this.isCancelled = isCancelled;
     }
 }

@@ -58,7 +58,7 @@ public class PaymentServiceTest {
         PaymentDTO dto = new PaymentDTO();
         dto.setAmountPayment(BigDecimal.ONE);
         dto.setCreatedAt(LocalDateTime.now());
-        dto.setCancelled(false);
+        dto.setIsCancelled(false);
 
         PaymentDTO createdPayment = paymentService.createPayment(entity.getId(), dto);
 
@@ -90,13 +90,13 @@ public class PaymentServiceTest {
         PaymentDTO modifiedDTO = new PaymentDTO();
         modifiedDTO.setAmountPayment(BigDecimal.valueOf(33));
         modifiedDTO.setCreatedAt(LocalDateTime.of(2025, 1, 1, 11, 1));
-        modifiedDTO.setCancelled(true);
+        modifiedDTO.setIsCancelled(true);
 
         PaymentDTO result = paymentService.modifyPayment(savedId, modifiedDTO);
 
         assertEquals(BigDecimal.valueOf(33), result.getAmountPayment());
         assertEquals(LocalDateTime.of(2025, 1, 1, 11, 1), result.getCreatedAt());
-        assertTrue(result.getCancelled());
+        assertTrue(result.getIsCancelled());
     }
 
     @Test
@@ -119,7 +119,7 @@ public class PaymentServiceTest {
         paymentRepository.save(payment);
 
         PaymentDTO result = paymentService.cancelledPaymentById(1);
-        assertTrue(result.getCancelled(), "Payment should be cancelled!");
+        assertTrue(result.getIsCancelled(), "Payment should be cancelled!");
         assertEquals(BigDecimal.TEN, result.getAmountPayment());
         assertEquals(createdTime, result.getCreatedAt());
     }
@@ -173,8 +173,8 @@ public class PaymentServiceTest {
         assertEquals(2, allPayments.size());
         assertEquals(BigDecimal.TEN, allPayments.get(0).getAmountPayment());
         assertEquals(BigDecimal.valueOf(144), allPayments.get(1).getAmountPayment());
-        assertFalse(allPayments.get(0).getCancelled());
-        assertTrue(allPayments.get(1).getCancelled());
+        assertFalse(allPayments.get(0).getIsCancelled());
+        assertTrue(allPayments.get(1).getIsCancelled());
 
     }
 
@@ -249,7 +249,7 @@ public class PaymentServiceTest {
         payment3.setBill(bill);
         paymentRepository.save(payment3);
 
-        List<PaymentDTO> cancelledPayments = paymentService.gwtAllCancelledPayments();
+        List<PaymentDTO> cancelledPayments = paymentService.getAllCancelledPayments();
 
         assertEquals(2, cancelledPayments.size(), "Two payments cancelled!");
         assertEquals(BigDecimal.valueOf(10), cancelledPayments.get(0).getAmountPayment());
