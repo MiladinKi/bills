@@ -125,7 +125,7 @@ public class PaymentRepositoryTest implements PaymentRepository {
     }
 
     private  int idCounter = 0;
-    private Map<Integer, PaymentEntity>paymentStorage = new HashMap<>();
+    private Map<Integer, PaymentEntity> paymentStorage = new HashMap<>();
 
     @Override
     public <S extends PaymentEntity> S save(@org.jetbrains.annotations.NotNull S entity) {

@@ -13,7 +13,7 @@ public class PaymentMapper {
         payment.setBill(bill);
         payment.setAmountPayment(paymentDTO.getAmountPayment());
         payment.setCreatedAt(paymentDTO.getCreatedAt());
-        payment.setIsCancelled(paymentDTO.getCancelled());
+        payment.setIsCancelled(paymentDTO.getIsCancelled());
         return payment;
     }
 
@@ -22,7 +22,7 @@ public class PaymentMapper {
         toDTO.setBillId(paymentEntity.getBill().getId());
         toDTO.setAmountPayment(paymentEntity.getAmountPayment());
         toDTO.setCreatedAt(paymentEntity.getCreatedAt());
-        toDTO.setCancelled(paymentEntity.getIsCancelled());
+        toDTO.setIsCancelled(paymentEntity.getIsCancelled());
 
         return toDTO;
     }
