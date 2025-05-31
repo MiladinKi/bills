@@ -7,6 +7,8 @@ import bills.repositories.TotalPaymentRepository;
 import bills.services.TotalPaymentService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -81,9 +83,9 @@ public class TotalPaymentController {
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/allPaymentsBetween")
-    public ResponseEntity<List<TotalPaymentSummaryDTO>> getAllPaymentsBetween(Integer from, Integer to){
+    public ResponseEntity<Page<TotalPaymentSummaryDTO>> getAllPaymentsBetween(Integer from, Integer to, Pageable pageable){
         try {
-            List<TotalPaymentSummaryDTO> payments = totalPaymentService.findAllPaymentsBetweenPeriod(from, to);
+            Page<TotalPaymentSummaryDTO> payments = totalPaymentService.findAllPaymentsBetweenPeriod(from, to, pageable);
             return ResponseEntity.ok(payments);
         } catch (RuntimeException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());

@@ -9,6 +9,8 @@ import bills.repositories.BillRepository;
 import bills.repositories.PaymentRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -69,22 +71,22 @@ public class PaymentService {
         return allPayments.stream().map(payment -> PaymentMapper.toDTO(payment)).collect(Collectors.toList());
         }
 
-        public PaymentsTotalityDTO getAllPaymentsBetween(LocalDateTime start, LocalDateTime end){
-        List<PaymentEntity> payments = paymentRepository.findByCreatedAtBetween(start, end);
-        List<PaymentDTO> paymentsDTO = payments.stream().map(payment -> PaymentMapper.toDTO(payment)).collect(Collectors.toList());
+        public PaymentsTotalityDTO getAllPaymentsBetween(LocalDateTime start, LocalDateTime end, Pageable pageable){
+        Page<PaymentEntity> payments = paymentRepository.findByCreatedAtBetween(start, end, pageable);
+        Page<PaymentDTO> paymentsDTO = payments.map(PaymentMapper::toDTO);
         BigDecimal totalAmount = payments.stream().map(PaymentEntity :: getAmountPayment).
         reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP);
 
-        return new PaymentsTotalityDTO(paymentsDTO, totalAmount);
+        return new PaymentsTotalityDTO(paymentsDTO.getContent(), totalAmount);
     }
 
-    public List<PaymentDTO> getAllCancelledPayments(){
-        List<PaymentEntity> payments = paymentRepository.findALlByIsCancelledTrue();
-        return payments.stream().map(PaymentMapper::toDTO).collect(Collectors.toList());
+    public Page<PaymentDTO> getAllCancelledPayments(Pageable pageable){
+        Page<PaymentEntity> payments = paymentRepository.findALlByIsCancelledTrue(pageable);
+        return payments.map(PaymentMapper::toDTO);
     }
 
-    public List<PaymentDTO> getCancelledBetween(LocalDateTime start, LocalDateTime end){
-        List<PaymentEntity> payments = paymentRepository.findByIsCancelledTrueAndCreatedAtBetween(start, end);
-        return payments.stream().map(PaymentMapper::toDTO).collect(Collectors.toList());
+    public Page<PaymentDTO> getCancelledBetween(LocalDateTime start, LocalDateTime end, Pageable pageable){
+        Page<PaymentEntity> payments = paymentRepository.findByIsCancelledTrueAndCreatedAtBetween(start, end, pageable);
+        return payments.map(PaymentMapper::toDTO);
     }
     }

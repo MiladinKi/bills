@@ -21,7 +21,7 @@ public class BillMapper {
         return bill;
     }
 
-    public static BillDTO toDTO (BillEntity billEntity){
+    public BillDTO toDTO(BillEntity billEntity){
         BillDTO dto = new BillDTO();
         dto.setId(billEntity.getId());
         dto.setName(billEntity.getName());

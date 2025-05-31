@@ -12,6 +12,9 @@ import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -188,8 +191,9 @@ public class TotalPaymentServiceTest {
         totalPayment2.setBill(bill2);
         totalPaymentRepository.save(totalPayment2);
 
-        List<TotalPaymentSummaryDTO> totals = totalPaymentService.findAllPaymentsBetweenPeriod(1, 10);
+        Pageable pageable = PageRequest.of(0, 5);
+        Page<TotalPaymentSummaryDTO> totals = totalPaymentService.findAllPaymentsBetweenPeriod(1, 10, pageable);
 
-        assertEquals(1, totals.size());
+        assertEquals(1, totals.getTotalElements());
     }
 }

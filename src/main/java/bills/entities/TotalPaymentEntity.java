@@ -11,6 +11,7 @@ public class TotalPaymentEntity {
     private Integer id;
     private BigDecimal amountTotalPayment;
     private Integer period;
+    private ETotalPayment payment;
 
     @ManyToOne (cascade = CascadeType.REFRESH)
     @JoinColumn(name = "bill_id")
@@ -19,10 +20,11 @@ public class TotalPaymentEntity {
     public TotalPaymentEntity() {
     }
 
-    public TotalPaymentEntity(Integer id, BigDecimal amountTotalPayment, Integer period, BillEntity bill) {
+    public TotalPaymentEntity(Integer id, BigDecimal amountTotalPayment, Integer period, ETotalPayment payment, BillEntity bill) {
         this.id = id;
         this.amountTotalPayment = amountTotalPayment;
         this.period = period;
+        this.payment = payment;
         this.bill = bill;
     }
 
@@ -48,6 +50,14 @@ public class TotalPaymentEntity {
 
     public void setPeriod(Integer period) {
         this.period = period;
+    }
+
+    public ETotalPayment getPayment() {
+        return payment;
+    }
+
+    public void setPayment(ETotalPayment payment) {
+        this.payment = payment;
     }
 
     public BillEntity getBill() {

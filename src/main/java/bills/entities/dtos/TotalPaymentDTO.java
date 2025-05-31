@@ -1,5 +1,6 @@
 package bills.entities.dtos;
 
+import bills.entities.ETotalPayment;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Max;
@@ -18,14 +19,16 @@ public class TotalPaymentDTO {
     @Min(value = 1, message = "The minimum period must be 1.")
     @Max(value = 36, message = "The maximum period can be bigger then 36!")
     private Integer period;
+    private ETotalPayment payment;
 
     public TotalPaymentDTO() {
     }
 
-    public TotalPaymentDTO(Integer billId, BigDecimal amountTotalPayment, Integer period) {
+    public TotalPaymentDTO(Integer billId, BigDecimal amountTotalPayment, Integer period, ETotalPayment payment) {
         this.billId = billId;
         this.amountTotalPayment = amountTotalPayment;
         this.period = period;
+        this.payment = payment;
     }
 
     public Integer getBillId() {
@@ -50,5 +53,13 @@ public class TotalPaymentDTO {
 
     public void setPeriod(@NotNull(message = "Period is mandatory.") @Min(value = 1, message = "The minimum period must be 1.") @Max(value = 36, message = "The maximum period can be bigger then 36!") Integer period) {
         this.period = period;
+    }
+
+    public ETotalPayment getPayment() {
+        return payment;
+    }
+
+    public void setPayment(ETotalPayment payment) {
+        this.payment = payment;
     }
 }

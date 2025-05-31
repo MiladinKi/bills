@@ -6,6 +6,8 @@ import bills.entities.dtos.BillTotalityDTO;
 import bills.mappers.BillMapper;
 import bills.repositories.BillRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -19,17 +21,19 @@ import java.util.stream.Collectors;
 public class BillService {
 
 
-    final private BillRepository billRepository;
+    private final BillRepository billRepository;
+    private final BillMapper billMapper;
 
-
-    public BillService(@Autowired BillRepository billRepository) {
+    @Autowired
+    public BillService(BillRepository billRepository, BillMapper billMapper) {
         this.billRepository = billRepository;
+        this.billMapper = billMapper;
     }
 
     public BillDTO createBill(BillDTO billDTO){
       BillEntity bill = BillMapper.toEntity(billDTO);
       billRepository.save(bill);
-      return BillMapper.toDTO(bill);
+      return billMapper.toDTO(bill);
     }
 
     public void deleteBillById(Integer billId){
@@ -45,23 +49,23 @@ public class BillService {
         bill.setBillInterval(billDTO.getBillInterval());
 
         billRepository.save(bill);
-        return BillMapper.toDTO(bill);
+        return billMapper.toDTO(bill);
     }
 
     public BillDTO getById(Integer billId){
         BillEntity bill = billRepository.findById(billId).
                 orElseThrow(()-> new RuntimeException("Bill not found!"));
-        return BillMapper.toDTO(bill);
+        return billMapper.toDTO(bill);
     }
 
     public List<BillDTO> getAll(){
         List<BillEntity> bills = billRepository.findAll();
-        return bills.stream().map(bill -> BillMapper.toDTO(bill)).collect(Collectors.toList());
+        return bills.stream().map(bill -> billMapper.toDTO(bill)).collect(Collectors.toList());
     }
 
-    public List<BillDTO> getAllByName(String name){
-        List<BillEntity> bills = billRepository.findByName(name);
-        return bills.stream().map(bill -> BillMapper.toDTO(bill)).collect(Collectors.toList());
+    public Page<BillDTO> getAllByName(String name, Pageable pageable){
+        Page<BillEntity> bills = billRepository.findByName(name, pageable);
+        return bills.map(billMapper::toDTO);
     }
 
 

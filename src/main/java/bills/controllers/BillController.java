@@ -6,6 +6,10 @@ import bills.entities.dtos.BillDTO;
 import bills.entities.dtos.BillTotalityDTO;
 import bills.services.BillService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -89,9 +93,10 @@ public class BillController {
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/findByName/{name}")
-    public ResponseEntity<List<BillDTO>> getAllByName(@PathVariable String name){
+    public ResponseEntity<Page<BillDTO>> getAllByName(@PathVariable String name,
+                                                      @PageableDefault(size = 5, sort = "name", direction = Sort.Direction.DESC) Pageable pageable){
         try {
-            List<BillDTO> bills = billService.getAllByName(name);
+            Page<BillDTO> bills = billService.getAllByName(name, pageable);
             return ResponseEntity.ok(bills);
         } catch (RuntimeException e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());

@@ -1,6 +1,7 @@
 package bills.controllers;
 
 import bills.entities.BillEntity;
+import bills.entities.ETotalPayment;
 import bills.entities.TotalPaymentEntity;
 import bills.entities.dtos.TotalPaymentSummaryDTO;
 import bills.repositories.BillRepository;
@@ -58,7 +59,8 @@ class TotalPaymentControllerTest {
                 {
                 "billId" : 1,
                 "amountTotalPayment" : 150.00,
-                "period" : 2
+                "period" : 2,
+                "payment": 1
                 }""";
 
         mockMvc.perform(post("/bills/totalPayment/createTP/{id}", id)
@@ -66,7 +68,8 @@ class TotalPaymentControllerTest {
                 .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.amountTotalPayment").value(150.00))
-                .andExpect(jsonPath("$.period").value(2));
+                .andExpect(jsonPath("$.period").value(2))
+                .andExpect(jsonPath("$.payment").value(1));
     }
 
     @Test
@@ -79,13 +82,15 @@ class TotalPaymentControllerTest {
         totalPayment.setBill(bill);
         totalPayment.setAmountTotalPayment(BigDecimal.TEN);
         totalPayment.setPeriod(3);
+        totalPayment.setPayment(ETotalPayment.fromCode(2));
         totalPaymentRepository.save(totalPayment);
 
         String updatedTotalPayment = """
                 {
                 "billId":1,
                 "amountTotalPayment":122.22,
-                "period":4
+                "period":4,
+                "payment":1
                 }
                 """;
 
@@ -94,6 +99,7 @@ class TotalPaymentControllerTest {
                 .content(updatedTotalPayment))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.amountTotalPayment").value(122.22))
+                .andExpect(jsonPath("$.payment").value(1))
                 .andExpect(jsonPath("$.period").value(4));
 
     }
@@ -108,6 +114,7 @@ class TotalPaymentControllerTest {
         totalPayment.setBill(bill);
         totalPayment.setAmountTotalPayment(BigDecimal.TEN);
         totalPayment.setPeriod(3);
+        totalPayment.setPayment(ETotalPayment.fromCode(1));
         totalPaymentRepository.save(totalPayment);
 
         mockMvc.perform(delete("/bills/totalPayment/deleteById/{id}", totalPayment.getId()))
@@ -125,12 +132,14 @@ class TotalPaymentControllerTest {
         totalPayment.setBill(bill);
         totalPayment.setAmountTotalPayment(BigDecimal.TEN);
         totalPayment.setPeriod(3);
+        totalPayment.setPayment(ETotalPayment.fromCode(1));
         totalPaymentRepository.save(totalPayment);
 
         TotalPaymentEntity totalPayment2 = new TotalPaymentEntity();
         totalPayment2.setBill(bill);
         totalPayment2.setAmountTotalPayment(BigDecimal.ONE);
         totalPayment2.setPeriod(4);
+        totalPayment2.setPayment(ETotalPayment.fromCode(1));
         totalPaymentRepository.save(totalPayment2);
 
         mockMvc.perform(get("/bills/totalPayment/getById/{id}", totalPayment2.getId()))
@@ -149,18 +158,21 @@ class TotalPaymentControllerTest {
         totalPayment.setBill(bill);
         totalPayment.setAmountTotalPayment(BigDecimal.TEN);
         totalPayment.setPeriod(3);
+        totalPayment.setPayment(ETotalPayment.fromCode(1));
         totalPaymentRepository.save(totalPayment);
 
         TotalPaymentEntity totalPayment2 = new TotalPaymentEntity();
         totalPayment2.setBill(bill);
         totalPayment2.setAmountTotalPayment(BigDecimal.ONE);
         totalPayment2.setPeriod(4);
+        totalPayment2.setPayment(ETotalPayment.fromCode(1));
         totalPaymentRepository.save(totalPayment2);
 
         mockMvc.perform(get("/bills/totalPayment/allTotalPayments"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[1].amountTotalPayment").value(1))
+                .andExpect(jsonPath("$[1].payment").value(1))
                 .andExpect(jsonPath("$[0].period").value(3));
     }
 
@@ -174,18 +186,22 @@ class TotalPaymentControllerTest {
         totalPayment.setBill(bill);
         totalPayment.setAmountTotalPayment(BigDecimal.TEN);
         totalPayment.setPeriod(3);
+        totalPayment.setPayment(ETotalPayment.fromCode(1));
         totalPaymentRepository.save(totalPayment);
 
         TotalPaymentEntity totalPayment2 = new TotalPaymentEntity();
         totalPayment2.setBill(bill);
         totalPayment2.setAmountTotalPayment(BigDecimal.ONE);
         totalPayment2.setPeriod(6);
+        totalPayment2.setPayment(ETotalPayment.fromCode(1));
         totalPaymentRepository.save(totalPayment2);
 
         mockMvc.perform(get("/bills/totalPayment/allPaymentsBetween")
                 .param("from", "1")
-                .param("to", "5"))
+                .param("to", "5")
+                        .param("page","0")
+                        .param("size", "5"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1));
+                .andExpect(jsonPath("$.content.length()").value(1));
     }
 }
