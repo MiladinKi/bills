@@ -2,10 +2,7 @@ package bills.utils;
 
 import bills.entities.BillEntity;
 import bills.repositories.BillRepository;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.data.repository.query.FluentQuery;
 
 import java.util.HashMap;
@@ -19,16 +16,32 @@ public class BillRepositoryTest  implements BillRepository {
 
 
     @Override
-    public List<BillEntity> findByName(String name) {
-        return billStorage.values().stream()
+    public Page<BillEntity> findByName(String name, Pageable pageable) {
+        // filtriraj listu
+        List<BillEntity> filtered = billStorage.values().stream()
                 .filter(bill -> name.equals(bill.getName()))
                 .collect(Collectors.toList());
+
+        // paginacija - izlistaj deo liste na osnovu pageable-a
+        int pageSize = pageable.getPageSize();
+        int currentPage = pageable.getPageNumber();
+        int startItem = currentPage * pageSize;
+
+        List<BillEntity> list;
+
+        if (filtered.size() < startItem) {
+            list = List.of(); // prazna lista ako je start veći od ukupnih elemenata
+        } else {
+            int toIndex = Math.min(startItem + pageSize, filtered.size());
+            list = filtered.subList(startItem, toIndex);
+        }
+
+        return new PageImpl<>(list, pageable, filtered.size());
     }
 
 
 
-
-    @Override
+        @Override
     public void flush() {
 
     }

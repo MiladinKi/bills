@@ -16,6 +16,10 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
@@ -213,8 +217,9 @@ public class PaymentServiceTest {
         LocalDateTime start = LocalDateTime.of(2025, 1, 1, 0, 0);
         LocalDateTime end = LocalDateTime.of(2025, 2, 12, 0, 0);
 
+        Pageable pageable = PageRequest.of(0, 10);
        // Mockito.when(paymentRepository.findByCreatedAtBetween(start, end)).thenReturn(mockPayments);
-        PaymentsTotalityDTO payments = paymentService.getAllPaymentsBetween(start, end);
+        PaymentsTotalityDTO payments = paymentService.getAllPaymentsBetween(start, end, pageable);
 
         assertEquals(2, payments.getPayments().size(), "Treba da budu 2 uplate u opsegu");
         assertTrue(BigDecimal.valueOf(11).compareTo(payments.getTotalAmount()) == 0, "Ukupan iznos treba biti 11");
@@ -249,11 +254,13 @@ public class PaymentServiceTest {
         payment3.setBill(bill);
         paymentRepository.save(payment3);
 
-        List<PaymentDTO> cancelledPayments = paymentService.getAllCancelledPayments();
+        Pageable pageable = PageRequest.of(0, 5);
 
-        assertEquals(2, cancelledPayments.size(), "Two payments cancelled!");
-        assertEquals(BigDecimal.valueOf(10), cancelledPayments.get(0).getAmountPayment());
-        assertEquals(BigDecimal.valueOf(33), cancelledPayments.get(1).getAmountPayment());
+        Page<PaymentDTO> cancelledPayments = paymentService.getAllCancelledPayments(pageable);
+
+        assertEquals(2, cancelledPayments.getTotalElements(), "Two payments cancelled!");
+        assertEquals(BigDecimal.valueOf(10), cancelledPayments.getContent().get(0).getAmountPayment());
+        assertEquals(BigDecimal.valueOf(33), cancelledPayments.getContent().get(1).getAmountPayment());
 
     }
 
@@ -289,10 +296,11 @@ public class PaymentServiceTest {
         LocalDateTime start = LocalDateTime.of(2025, 01, 01, 0, 0);
         LocalDateTime end = LocalDateTime.of(2025, 3, 1, 0, 0);
 
-        List<PaymentDTO> cancelledPayments = paymentService.getCancelledBetween(start, end);
+        Pageable pageable = PageRequest.of(0, 5);
+        Page<PaymentDTO> cancelledPayments = paymentService.getCancelledBetween(start, end, pageable);
 
-        assertEquals(1, cancelledPayments.size(), "One payment cancelled!");
-        assertEquals(BigDecimal.TEN, cancelledPayments.get(0).getAmountPayment());
+        assertEquals(1, cancelledPayments.getTotalElements(), "One payment cancelled!");
+        assertEquals(BigDecimal.TEN, cancelledPayments.getContent().get(0).getAmountPayment());
 
     }
 }

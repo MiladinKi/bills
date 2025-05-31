@@ -10,6 +10,8 @@ import bills.repositories.BillRepository;
 import bills.repositories.TotalPaymentRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -47,6 +49,7 @@ public class TotalPaymentService {
         totalPayment.setId(totalPaymentDTO.getBillId());
         totalPayment.setAmountTotalPayment(totalPaymentDTO.getAmountTotalPayment());
         totalPayment.setPeriod(totalPaymentDTO.getPeriod());
+        totalPayment.setPayment(totalPaymentDTO.getPayment());
         totalPaymentRepository.save(totalPayment);
          return TotalPaymentMapper.toDTO(totalPayment);
     }
@@ -66,10 +69,10 @@ public class TotalPaymentService {
         return totalPayments.stream().map(tp -> TotalPaymentMapper.toDTO(tp)).collect(Collectors.toList());
     }
 
-    public List<TotalPaymentSummaryDTO> findAllPaymentsBetweenPeriod(Integer from, Integer to){
-        List<TotalPaymentEntity> totalPayments = totalPaymentRepository.findAllByPeriodBetween(from, to);
-        return totalPayments.stream().map(entity -> new TotalPaymentSummaryDTO(
+    public Page<TotalPaymentSummaryDTO> findAllPaymentsBetweenPeriod(Integer from, Integer to, Pageable pageable){
+        Page<TotalPaymentEntity> totalPayments = totalPaymentRepository.findAllByPeriodBetween(from, to, pageable);
+        return totalPayments.map(entity -> new TotalPaymentSummaryDTO(
                 entity.getAmountTotalPayment(),
-                entity.getPeriod())).collect(Collectors.toList());
+                entity.getPeriod()));
     }
 }

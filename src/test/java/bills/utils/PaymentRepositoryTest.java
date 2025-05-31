@@ -2,10 +2,7 @@ package bills.utils;
 
 import bills.entities.PaymentEntity;
 import bills.repositories.PaymentRepository;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.data.repository.query.FluentQuery;
 
 import java.time.LocalDateTime;
@@ -212,25 +209,39 @@ public class PaymentRepositoryTest implements PaymentRepository {
     }
 
     @Override
-    public List<PaymentEntity> findByCreatedAtBetween(LocalDateTime start, LocalDateTime end) {
-        return paymentStorage.values().stream()
+    public Page<PaymentEntity> findByCreatedAtBetween(LocalDateTime start, LocalDateTime end, Pageable pageable) {
+        List<PaymentEntity> filteredPayments = paymentStorage.values().stream()
                 .filter(p -> p.getCreatedAt() != null &&
                         !p.getCreatedAt().isBefore(start) &&
                         !p.getCreatedAt().isAfter(end))
                 .collect(Collectors.toList());
+
+        int startIndex = (int) pageable.getOffset();
+        int endIndex = (int) Math.min(startIndex + pageable.getPageSize(), filteredPayments.size());
+        List<PaymentEntity> pageContent = filteredPayments.subList(startIndex, endIndex);
+
+        return new PageImpl<>(pageContent, pageable, filteredPayments.size());
     }
 
     @Override
-    public List<PaymentEntity> findALlByIsCancelledTrue() {
-        return paymentStorage.values().stream().filter(PaymentEntity::getIsCancelled)
+    public Page<PaymentEntity> findALlByIsCancelledTrue(Pageable pageable) {
+        List<PaymentEntity> filteredPayments = paymentStorage.values().stream().filter(PaymentEntity::getIsCancelled)
                 .collect(Collectors.toList());
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), filteredPayments.size());
+        List<PaymentEntity> pagedList = filteredPayments.subList(start, end);
+        return new PageImpl<>(pagedList, pageable, filteredPayments.size());
     }
 
     @Override
-    public List<PaymentEntity> findByIsCancelledTrueAndCreatedAtBetween(LocalDateTime start, LocalDateTime end) {
-        return paymentStorage.values().stream()
+    public Page<PaymentEntity> findByIsCancelledTrueAndCreatedAtBetween(LocalDateTime start, LocalDateTime end, Pageable pageable) {
+        List<PaymentEntity> filteredPayments = paymentStorage.values().stream()
                 .filter(p -> Boolean.TRUE.equals(p.getIsCancelled()))
                 .filter(p -> !p.getCreatedAt().isBefore(start) && !p.getCreatedAt().isAfter(end))
                 .collect(Collectors.toList());
+        int startIndex = (int) pageable.getOffset();
+        int endIndex = Math.min((startIndex + pageable.getPageSize()), filteredPayments.size());
+        List<PaymentEntity> pagedList = filteredPayments.subList(startIndex, endIndex);
+        return new PageImpl<>(pagedList, pageable, filteredPayments.size());
     }
 }

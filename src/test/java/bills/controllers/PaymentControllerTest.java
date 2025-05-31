@@ -33,7 +33,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureMockMvc
 @Transactional
 
-
 public class PaymentControllerTest {
 
     @Autowired
@@ -196,9 +195,16 @@ public class PaymentControllerTest {
 
         mockMvc.perform(get("/bills/payment/allPaymentsBetween")
                         .param("start", "2025-01-01T00:00:00")
-                        .param("end", "2025-03-01T00:00:00"))
+                        .param("end", "2025-03-01T00:00:00")
+                .param("page", "0")
+                .param("size", "5"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.payments.length()").value(1));
+                // Proveravamo da je lista payments veličine 1
+                .andExpect(jsonPath("$.payments.length()").value(1))
+                // Proveravamo da je ukupna suma jednaka 10
+                .andExpect(jsonPath("$.totalAmount").value(10))
+                // Opcionalno: proveri da prvi payment ima amountPayment 10
+                .andExpect(jsonPath("$.payments[0].amountPayment").value(10));
     }
 
 
@@ -222,10 +228,14 @@ public class PaymentControllerTest {
         payment2.setIsCancelled(false);
         paymentRepository.save(payment2);
 
-        mockMvc.perform(get("/bills/payment/cancelledPayments"))
+        mockMvc.perform(get("/bills/payment/cancelledPayments")
+                        .param("page","0")
+                        .param("size", "5"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].isCancelled").value(true));
+                .andExpect(jsonPath("$.content.length()").value(1))
+                .andExpect(jsonPath("$.content[0].isCancelled").value(true))
+                .andExpect(jsonPath("$.totalElements").value(1))
+                .andExpect(jsonPath("$.size").value(5));
     }
 
     @Test
@@ -257,8 +267,10 @@ public class PaymentControllerTest {
 
         mockMvc.perform(get("/bills/payment/allCancelledBetween")
                 .param("start", "2025-01-01T00:00:00")
-                .param("end", "2025-03-03T00:00:00"))
+                .param("end", "2025-03-03T00:00:00")
+                        .param("page", "0")
+                        .param("size", "5"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1));
+                .andExpect(jsonPath("$.content.length()").value(1));
     }
 }

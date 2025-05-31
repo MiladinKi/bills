@@ -3,10 +3,7 @@ package bills.utils;
 import bills.entities.TotalPaymentEntity;
 import bills.repositories.TotalPaymentRepository;
 import jakarta.persistence.criteria.CriteriaBuilder;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.data.repository.query.FluentQuery;
 
 import java.util.*;
@@ -179,9 +176,13 @@ public class TotalPaymentRepositoryTest implements TotalPaymentRepository {
     }
 
     @Override
-    public List<TotalPaymentEntity> findAllByPeriodBetween(Integer from, Integer to) {
-       return totalPaymentStorage.values().stream()
+    public Page<TotalPaymentEntity> findAllByPeriodBetween(Integer from, Integer to, Pageable pageable) {
+       List<TotalPaymentEntity> payments = totalPaymentStorage.values().stream()
                 .filter(payment -> payment.getPeriod() >= from && payment.getPeriod() <= to)
                 .collect(Collectors.toList());
+       int start = (int) pageable.getOffset();
+       int end = Math.min((start + pageable.getPageSize()), payments.size());
+       List<TotalPaymentEntity> pagedList = payments.subList(start, end);
+       return new PageImpl<>(pagedList, pageable, payments.size());
     }
 }

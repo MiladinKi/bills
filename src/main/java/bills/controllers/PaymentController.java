@@ -4,6 +4,11 @@ import bills.entities.PaymentEntity;
 import bills.entities.dtos.PaymentDTO;
 import bills.entities.dtos.PaymentsTotalityDTO;
 import bills.services.PaymentService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +23,7 @@ import java.util.List;
 @RequestMapping (path = "/bills/payment")
 public class PaymentController {
 
+    @Autowired
     private PaymentService paymentService;
 
     public PaymentController(PaymentService paymentService) {
@@ -80,11 +86,13 @@ public class PaymentController {
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/allPaymentsBetween")
+   //@GetMapping("/allPaymentsBetween")
     public ResponseEntity<PaymentsTotalityDTO> paymentsBetween(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end,
+            @PageableDefault(size = 5, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable) {
         try {
-            PaymentsTotalityDTO payments = paymentService.getAllPaymentsBetween(start, end);
+            PaymentsTotalityDTO payments = paymentService.getAllPaymentsBetween(start, end, pageable);
             return ResponseEntity.ok(payments);
         } catch (RuntimeException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
@@ -95,9 +103,9 @@ public class PaymentController {
 
 
     @RequestMapping(method = RequestMethod.GET, path = "/cancelledPayments")
-    public ResponseEntity<List<PaymentDTO>> getAllCancelled () {
+    public ResponseEntity<Page<PaymentDTO>> getAllCancelled (@PageableDefault(size = 5, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         try {
-            List<PaymentDTO> payments = paymentService.getAllCancelledPayments();
+            Page<PaymentDTO> payments = paymentService.getAllCancelledPayments(pageable);
             return ResponseEntity.ok(payments);
         } catch (RuntimeException e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
@@ -107,10 +115,11 @@ public class PaymentController {
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/allCancelledBetween")
-    public ResponseEntity<List<PaymentDTO>> cancelledPaymentsBetween(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
-                                                                     @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end){
+    public ResponseEntity<Page<PaymentDTO>> cancelledPaymentsBetween(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
+                                                                     @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end,
+                                                                     @PageableDefault(size = 5, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable){
         try {
-            List<PaymentDTO> payments = paymentService.getCancelledBetween(start, end);
+            Page<PaymentDTO> payments = paymentService.getCancelledBetween(start, end, pageable);
             return ResponseEntity.ok(payments);
         } catch (RuntimeException e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
