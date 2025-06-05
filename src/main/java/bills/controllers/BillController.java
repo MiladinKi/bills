@@ -43,18 +43,18 @@ public class BillController {
 
     @RequestMapping(method = RequestMethod.DELETE, path = "/deleteById/{billId}")
     public ResponseEntity<String> deleteById(@PathVariable Integer billId){
-    try {
+        try {
             billService.deleteBillById(billId);
             return ResponseEntity.ok("Bill successfully delete.");
 
         } catch (RuntimeException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Bill not found");
 
-    } catch (Exception e) {
-        throw new  ResponseStatusException (HttpStatus.INTERNAL_SERVER_ERROR, "Error occur: " + e.getMessage());
-    }
+        } catch (Exception e) {
+            throw new  ResponseStatusException (HttpStatus.INTERNAL_SERVER_ERROR, "Error occur: " + e.getMessage());
+        }
 
-}
+    }
 
     @RequestMapping(method = RequestMethod.PUT, path = "/modifyById/{billId}")
     public ResponseEntity<BillDTO> modifyById(@PathVariable Integer billId, @RequestBody BillDTO billDTO){
@@ -62,11 +62,11 @@ public class BillController {
             BillDTO updatedBill = billService.modifyById(billId, billDTO);
             return ResponseEntity.ok(updatedBill);
         } catch (RuntimeException e){
-           throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred: " + e.getMessage());
         }
-}
+    }
 
     @RequestMapping(method = RequestMethod.GET, path = "/getById/{billId}")
     public ResponseEntity<BillDTO> getById(@PathVariable Integer billId){

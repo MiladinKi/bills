@@ -1,6 +1,7 @@
 package bills.entities.dtos;
 
 import bills.entities.ETotalPayment;
+import bills.entities.PaymentEntity;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Max;

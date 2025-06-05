@@ -53,18 +53,17 @@ class BillControllerTest {
         String json = """
                 {
                 "name":"struja",
-                "amount": 100.00,
-                "dateOfBill":"2025-02-12",
-                "description":"create test"
+                "description":"create test",
+                "billInterval":1
                 }
                 """;
 
         mockMvc.perform(post("/bills/bill/createBill")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("struja"))
-                .andExpect(jsonPath("$.amount").value(100.00));
+                .andExpect(jsonPath("$.billInterval").value(1));
     }
 
     @Test
@@ -100,8 +99,8 @@ class BillControllerTest {
                 """;
 
         mockMvc.perform(put("/bills/bill/modifyById/" + bill.getId())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(updatedJson))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updatedJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("struja-updated"))
                 .andExpect(jsonPath("$.billInterval").value(1));
@@ -170,9 +169,9 @@ class BillControllerTest {
 
         mockMvc.perform(get("/bills/bill/findByName/struja"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].name").value("struja"))
-                .andExpect(jsonPath("$[1].name").value("struja"));
+                .andExpect(jsonPath("$.content.length()").value(2))
+                .andExpect(jsonPath("$.content[0].name").value("struja"))
+                .andExpect(jsonPath("$.content[1].name").value("struja"));
     }
 
 }

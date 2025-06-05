@@ -45,14 +45,21 @@ public class TotalPaymentService {
     }
 
     public TotalPaymentDTO modifyTotalPaymentById(Integer id, TotalPaymentDTO totalPaymentDTO){
-        TotalPaymentEntity totalPayment = totalPaymentRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("TotalPayment with id: " + id + " not found!"));
-        totalPayment.setId(totalPaymentDTO.getBillId());
+        System.out.println("Trying to find TotalPayment with ID: " + id);
+        TotalPaymentEntity totalPayment = totalPaymentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("TotalPayment with id: " + id + " not found!"));
+        System.out.println("TotalPayment found: " + totalPayment);
+
+        // Update polja...
         totalPayment.setAmountTotalPayment(totalPaymentDTO.getAmountTotalPayment());
         totalPayment.setPeriod(totalPaymentDTO.getPeriod());
         totalPayment.setPayment(totalPaymentDTO.getPayment());
+
         totalPaymentRepository.save(totalPayment);
-         return TotalPaymentMapper.toDTO(totalPayment);
+
+        return TotalPaymentMapper.toDTO(totalPayment);
     }
+
 
     public void deleteTotalPaymentById(Integer id){
         TotalPaymentEntity totalPayment = totalPaymentRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("TotalPayment with id: " + id + " not found!"));

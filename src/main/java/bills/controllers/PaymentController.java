@@ -3,6 +3,7 @@ package bills.controllers;
 import bills.entities.PaymentEntity;
 import bills.entities.dtos.PaymentDTO;
 import bills.entities.dtos.PaymentsTotalityDTO;
+import bills.services.PaymentReportService;
 import bills.services.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -10,7 +11,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -25,6 +28,9 @@ public class PaymentController {
 
     @Autowired
     private PaymentService paymentService;
+
+    @Autowired
+    private PaymentReportService reportService;
 
     public PaymentController(PaymentService paymentService) {
         this.paymentService = paymentService;
@@ -125,6 +131,25 @@ public class PaymentController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/paymentReport")
+    public ResponseEntity<byte[]> getPaymentReport() {
+        try {
+            // Uzmi podatke za izveštaj
+            List<PaymentDTO> payments = paymentService.getAllPayments(); // napravi ovu metodu
+
+            // Generiši PDF izveštaj
+            byte[] pdfReport = reportService.generateReport(payments);
+
+            // Vrati PDF sa headerima
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=paymentReport.pdf")
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(pdfReport);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
         }
     }
 }
