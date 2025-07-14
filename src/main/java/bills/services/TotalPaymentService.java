@@ -12,7 +12,9 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -30,6 +32,13 @@ public class TotalPaymentService {
     private final TotalPaymentRepository totalPaymentRepository;
     private final BillRepository billRepository;
 
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public class ObjectNotFoundException extends RuntimeException{
+        public ObjectNotFoundException(String message){
+            super(message);
+        }
+    }
+
     public TotalPaymentService(TotalPaymentRepository totalPaymentRepository, BillRepository billRepository) {
         this.totalPaymentRepository = totalPaymentRepository;
         this.billRepository = billRepository;
@@ -38,7 +47,7 @@ public class TotalPaymentService {
 
 
     public TotalPaymentDTO createTotalPayment(TotalPaymentDTO totalPaymentDTO, Integer billId){
-        BillEntity bill = billRepository.findById(billId).orElseThrow(()-> new EntityNotFoundException("Bill with id: " + billId + " not found!"));
+        BillEntity bill = billRepository.findById(billId).orElseThrow(()-> new ObjectNotFoundException("Bill with id: " + billId + " not found!"));
         TotalPaymentEntity totalPayment = TotalPaymentMapper.toEntity(totalPaymentDTO, bill);
         totalPaymentRepository.save(totalPayment);
         return TotalPaymentMapper.toDTO(totalPayment);
@@ -47,7 +56,7 @@ public class TotalPaymentService {
     public TotalPaymentDTO modifyTotalPaymentById(Integer id, TotalPaymentDTO totalPaymentDTO){
         System.out.println("Trying to find TotalPayment with ID: " + id);
         TotalPaymentEntity totalPayment = totalPaymentRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("TotalPayment with id: " + id + " not found!"));
+                .orElseThrow(() -> new ObjectNotFoundException("TotalPayment with id: " + id + " not found!"));
         System.out.println("TotalPayment found: " + totalPayment);
 
         // Update polja...
@@ -62,12 +71,12 @@ public class TotalPaymentService {
 
 
     public void deleteTotalPaymentById(Integer id){
-        TotalPaymentEntity totalPayment = totalPaymentRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("TotalPayment with id: " + id + " not found!"));
+        TotalPaymentEntity totalPayment = totalPaymentRepository.findById(id).orElseThrow(()-> new ObjectNotFoundException("TotalPayment with id: " + id + " not found!"));
         totalPaymentRepository.delete(totalPayment);
     }
 
     public TotalPaymentDTO getById(Integer id){
-        TotalPaymentEntity paymentEntity = totalPaymentRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("TotalPayment with id: " + id + " not found!"));
+        TotalPaymentEntity paymentEntity = totalPaymentRepository.findById(id).orElseThrow(()-> new ObjectNotFoundException("TotalPayment with id: " + id + " not found!"));
         return TotalPaymentMapper.toDTO(paymentEntity);
     }
 

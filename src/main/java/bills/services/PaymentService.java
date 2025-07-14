@@ -8,10 +8,13 @@ import bills.mappers.PaymentMapper;
 import bills.repositories.BillRepository;
 import bills.repositories.PaymentRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -34,8 +37,15 @@ public class PaymentService {
         this.paymentRepository = paymentRepository;
     }
 
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public class ObjectNotFoundException extends RuntimeException{
+        public ObjectNotFoundException (String message){
+            super(message);
+        }
+    }
+
     public PaymentDTO createPayment(Integer billId, PaymentDTO paymentDTO) {
-        BillEntity bill = billRepository.findById(billId).orElseThrow(()-> new RuntimeException("Bill not found"));
+        BillEntity bill = billRepository.findById(billId).orElseThrow(()-> new ObjectNotFoundException("Bill not found"));
         PaymentEntity payment = PaymentMapper.toEntity(paymentDTO, bill);
         payment.setBill(bill);
         PaymentEntity savedPayment = paymentRepository.save(payment);
@@ -54,7 +64,7 @@ public class PaymentService {
         }
 
         public PaymentDTO cancelledPaymentById(Integer id){
-        PaymentEntity payment = paymentRepository.findById(id).orElseThrow(()-> new RuntimeException("Payment not found"));
+        PaymentEntity payment = paymentRepository.findById(id).orElseThrow(()-> new ObjectNotFoundException("Payment not found"));
 
         payment.setIsCancelled(true);
         paymentRepository.save(payment);
@@ -62,7 +72,7 @@ public class PaymentService {
         }
 
         public PaymentDTO getById(Integer id){
-        PaymentEntity payment = paymentRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Payment with id" + id + " not found"));
+        PaymentEntity payment = paymentRepository.findById(id).orElseThrow(()-> new ObjectNotFoundException("Payment with id" + id + " not found"));
         return PaymentMapper.toDTO(payment);
         }
 

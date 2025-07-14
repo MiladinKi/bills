@@ -3,6 +3,7 @@ package bills.controllers;
 import bills.entities.PaymentEntity;
 import bills.entities.dtos.PaymentDTO;
 import bills.entities.dtos.PaymentsTotalityDTO;
+import bills.services.BillService;
 import bills.services.PaymentReportService;
 import bills.services.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,11 +37,25 @@ public class PaymentController {
         this.paymentService = paymentService;
     }
 
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public class InternalServerErrorException extends RuntimeException{
+        public InternalServerErrorException(String message){
+            super(message);
+        }
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public class ObjectNotFoundException extends RuntimeException{
+        public ObjectNotFoundException (String message){
+            super(message);
+        }
+    }
+
     @RequestMapping(method = RequestMethod.POST, path = "/createPayment/{id}")
     public PaymentDTO createPayment(@PathVariable Integer id, @RequestBody PaymentDTO dto){
         try {
             return paymentService.createPayment(id, dto);
-        } catch (Exception e) {
+        } catch (InternalServerErrorException e) {
             throw  new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occur: " + e.getMessage());
         }
     }
@@ -50,9 +65,9 @@ public class PaymentController {
         try {
             PaymentDTO updatedPayment = paymentService.modifyPayment(id, dto);
             return ResponseEntity.ok(updatedPayment);
-        } catch (RuntimeException e){
+        } catch (ObjectNotFoundException e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (Exception e) {
+        } catch (InternalServerErrorException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred: " + e.getMessage());
         }
     }
@@ -62,9 +77,9 @@ public class PaymentController {
         try {
             PaymentDTO cancelledPayment = paymentService.cancelledPaymentById(id);
             return ResponseEntity.ok(cancelledPayment);
-        } catch (RuntimeException e){
+        } catch (ObjectNotFoundException e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (Exception e) {
+        } catch (InternalServerErrorException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred: " + e.getMessage());
         }
     }
@@ -74,9 +89,9 @@ public class PaymentController {
         try {
             PaymentDTO payment = paymentService.getById(id);
             return ResponseEntity.ok(payment);
-        } catch (RuntimeException e){
+        } catch (ObjectNotFoundException e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (Exception e) {
+        } catch (InternalServerErrorException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred: " + e.getMessage());
         }
     }
@@ -86,7 +101,7 @@ public class PaymentController {
         try {
             List<PaymentDTO> allPayments = paymentService.getAllPayments();
             return ResponseEntity.ok(allPayments);
-        } catch (Exception e) {
+        } catch (InternalServerErrorException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred: " + e.getMessage());
         }
     }
@@ -100,9 +115,9 @@ public class PaymentController {
         try {
             PaymentsTotalityDTO payments = paymentService.getAllPaymentsBetween(start, end, pageable);
             return ResponseEntity.ok(payments);
-        } catch (RuntimeException e) {
+        } catch (ObjectNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (Exception e) {
+        } catch (InternalServerErrorException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred: " + e.getMessage());
         }
     }
@@ -113,9 +128,9 @@ public class PaymentController {
         try {
             Page<PaymentDTO> payments = paymentService.getAllCancelledPayments(pageable);
             return ResponseEntity.ok(payments);
-        } catch (RuntimeException e){
+        } catch (ObjectNotFoundException e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (Exception e) {
+        } catch (InternalServerErrorException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred: " + e.getMessage());
         }
     }
@@ -127,9 +142,9 @@ public class PaymentController {
         try {
             Page<PaymentDTO> payments = paymentService.getCancelledBetween(start, end, pageable);
             return ResponseEntity.ok(payments);
-        } catch (RuntimeException e){
+        } catch (ObjectNotFoundException e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (Exception e) {
+        } catch (InternalServerErrorException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred: " + e.getMessage());
         }
     }

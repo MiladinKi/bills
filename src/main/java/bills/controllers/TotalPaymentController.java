@@ -33,11 +33,25 @@ public class TotalPaymentController {
     @Autowired
     private TotalPaymentRepository totalPaymentRepository;
 
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public class ObjectNotFoundException extends RuntimeException{
+        public ObjectNotFoundException(String message){
+            super(message);
+        }
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public class InternalServerErrorException extends RuntimeException{
+        public InternalServerErrorException(String message){
+            super(message);
+        }
+    }
+
     @RequestMapping(method = RequestMethod.POST, path = "/createTP/{billId}")
     public TotalPaymentDTO createTotalPayment(@RequestBody TotalPaymentDTO totalPaymentDTO, @PathVariable Integer billId){
         try {
             return totalPaymentService.createTotalPayment(totalPaymentDTO, billId);
-        } catch (Exception e) {
+        } catch (InternalServerErrorException e) {
             throw  new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occur: " + e.getMessage());
         }
     }
@@ -49,10 +63,10 @@ public class TotalPaymentController {
             TotalPaymentDTO updatedPayment = totalPaymentService.modifyTotalPaymentById(id, totalPaymentDTO);
             System.out.println("TotalPayment updated successfully for ID: " + id);
             return ResponseEntity.ok(updatedPayment);
-        } catch (RuntimeException e){
+        } catch (ObjectNotFoundException e){
             System.out.println("RuntimeException: " + e.getMessage());
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (Exception e) {
+        } catch (InternalServerErrorException e) {
             System.out.println("Exception: " + e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred: " + e.getMessage());
         }
@@ -70,9 +84,9 @@ public class TotalPaymentController {
         try{
         TotalPaymentDTO totalPayment = totalPaymentService.getById(id);
         return ResponseEntity.ok(totalPayment);
-        } catch (RuntimeException e){
+        } catch (ObjectNotFoundException e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (Exception e) {
+        } catch (InternalServerErrorException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred: " + e.getMessage());
         }
     }
@@ -82,9 +96,9 @@ public class TotalPaymentController {
         try {
             List<TotalPaymentDTO> totalPayments = totalPaymentService.getAllTotalPayments();
             return ResponseEntity.ok(totalPayments);
-        } catch (RuntimeException e){
+        } catch (ObjectNotFoundException e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (Exception e) {
+        } catch (InternalServerErrorException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred: " + e.getMessage());
         }
     }
@@ -94,9 +108,9 @@ public class TotalPaymentController {
         try {
             Page<TotalPaymentSummaryDTO> payments = totalPaymentService.findAllPaymentsBetweenPeriod(from, to, pageable);
             return ResponseEntity.ok(payments);
-        } catch (RuntimeException e) {
+        } catch (ObjectNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (Exception e) {
+        } catch (InternalServerErrorException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred: " + e.getMessage());
         }
     }

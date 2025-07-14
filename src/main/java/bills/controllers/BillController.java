@@ -5,6 +5,7 @@ import bills.entities.BillEntity;
 import bills.entities.dtos.BillDTO;
 import bills.entities.dtos.BillTotalityDTO;
 import bills.services.BillService;
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,14 +32,22 @@ public class BillController {
         this.billService = billService;
     }
 
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public class InternalServerErrorException extends RuntimeException{
+        public InternalServerErrorException(String message){
+            super(message);
+        }
+    }
+
     @RequestMapping(method = RequestMethod.POST, path = "/createBill")
     public BillDTO createBill(@RequestBody BillDTO billDTO){
-        try {
-            return billService.createBill(billDTO);
 
-        } catch (Exception e) {
-            throw  new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occur: " + e.getMessage());
+        if (billDTO == null || billDTO.getName() == null) {
+            throw new InternalServerErrorException("Bill is not valid!");
         }
+
+        return billService.createBill(billDTO);
+
     }
 
     @RequestMapping(method = RequestMethod.DELETE, path = "/deleteById/{billId}")
@@ -47,10 +56,10 @@ public class BillController {
             billService.deleteBillById(billId);
             return ResponseEntity.ok("Bill successfully delete.");
 
-        } catch (RuntimeException e) {
+        } catch (ObjectNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Bill not found");
 
-        } catch (Exception e) {
+        } catch (InternalServerErrorException e) {
             throw new  ResponseStatusException (HttpStatus.INTERNAL_SERVER_ERROR, "Error occur: " + e.getMessage());
         }
 
@@ -61,9 +70,9 @@ public class BillController {
         try {
             BillDTO updatedBill = billService.modifyById(billId, billDTO);
             return ResponseEntity.ok(updatedBill);
-        } catch (RuntimeException e){
+        } catch (ObjectNotFoundException e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (Exception e) {
+        } catch (InternalServerErrorException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred: " + e.getMessage());
         }
     }
@@ -73,9 +82,9 @@ public class BillController {
         try {
             BillDTO bill = billService.getById(billId);
             return ResponseEntity.ok(bill);
-        } catch (RuntimeException e){
+        } catch (ObjectNotFoundException e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (Exception e) {
+        } catch (InternalServerErrorException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred: " + e.getMessage());
         }
     }
@@ -85,9 +94,9 @@ public class BillController {
         try {
             List<BillDTO> bills = billService.getAll();
             return ResponseEntity.ok(bills);
-        } catch (RuntimeException e){
+        } catch (ObjectNotFoundException e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (Exception e) {
+        } catch (InternalServerErrorException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred: " + e.getMessage());
         }
     }
@@ -98,9 +107,9 @@ public class BillController {
         try {
             Page<BillDTO> bills = billService.getAllByName(name, pageable);
             return ResponseEntity.ok(bills);
-        } catch (RuntimeException e){
+        } catch (ObjectNotFoundException e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (Exception e) {
+        } catch (InternalServerErrorException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred: " + e.getMessage());
         }
     }

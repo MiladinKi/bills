@@ -5,11 +5,14 @@ import bills.entities.dtos.BillDTO;
 import bills.entities.dtos.BillTotalityDTO;
 import bills.mappers.BillMapper;
 import bills.repositories.BillRepository;
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -24,6 +27,13 @@ public class BillService {
     private final BillRepository billRepository;
     private final BillMapper billMapper;
 
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public class ObjectNotFoundException extends RuntimeException{
+        public ObjectNotFoundException(String message){
+            super(message);
+        }
+    }
+
     @Autowired
     public BillService(BillRepository billRepository, BillMapper billMapper) {
         this.billRepository = billRepository;
@@ -37,12 +47,12 @@ public class BillService {
     }
 
     public void deleteBillById(Integer billId){
-        BillEntity bill = billRepository.findById(billId).orElseThrow(()-> new RuntimeException("Bill not found!"));
+        BillEntity bill = billRepository.findById(billId).orElseThrow(()-> new ObjectNotFoundException("Bill not found!"));
         billRepository.delete(bill);
     }
 
     public BillDTO modifyById(Integer billId, BillDTO billDTO){
-        BillEntity bill = billRepository.findById(billId).orElseThrow(()-> new RuntimeException("Bill not found!"));
+        BillEntity bill = billRepository.findById(billId).orElseThrow(()-> new ObjectNotFoundException("Bill not found!"));
 
         bill.setName(billDTO.getName());
         bill.setDescription(billDTO.getDescription());
@@ -54,7 +64,7 @@ public class BillService {
 
     public BillDTO getById(Integer billId){
         BillEntity bill = billRepository.findById(billId).
-                orElseThrow(()-> new RuntimeException("Bill not found!"));
+                orElseThrow(()-> new ObjectNotFoundException("Bill not found!"));
         return billMapper.toDTO(bill);
     }
 
